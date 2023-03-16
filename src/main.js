@@ -3,7 +3,7 @@ import App from './App.vue'
 import { anu } from 'anu-vue'
 
 import './assets/main.css'
-
+import './assets/markdown.css'
 // UnoCSS import
 import 'uno.css'
 
