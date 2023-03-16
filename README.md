@@ -257,22 +257,3 @@ This example will display two clause templates:
 The `jurisdiction` clause template will display a text input for the `state` and `city` inputs, a checkbox for the `asExclusiveJurisdiction` input, and a text input for the `courtLevel` input.
 
 The `choiceOfLaw` clause template will display a text input for the `choiceOfLaw` input, a checkbox for the `contractContainSchedules`, `contractContainExhibits`, `contractContainAppendices`, and `contractContainAttachments` inputs, and a text input for the `exclusionOfLaw` input.
-
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
