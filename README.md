@@ -47,16 +47,15 @@ There are four input types:
 
 #### Input Attributes
 
-| Attribute         | Type    | Description                                                                                                           | Mandatory | Default   |
-|-------------------|---------|-----------------------------------------------------------------------------------------------------------------------|-----------|-----------|
-| label             | String  | The label for the input field.                                                                                        | Yes       | N/A       |
-| type              | String  | The input type (text, checkbox, select, date).                                                                        | Yes       | N/A       |
-| default           | Various | The default value for the input field.                                                                                | No        | `null`    |
-| mandatory         | Boolean | Whether the input field is mandatory (if the input of a mandatory text is empty, the text displayed will be default). | No        | `false`   |
-| activeContent     | String  | Content to use when the checkbox is checked (only applicable for checkbox type).                                      | No        | N/A       |
-| inactiveContent   | String  | Content to use when the checkbox is unchecked (only applicable for checkbox type).                                    | No        | N/A       |
-| template          | String  | A string with placeholders to be replaced by the value of another input (only applicable for text type).              | No        | N/A       |
-| options           | Array   | An array of options for the select input type.                                                                        | No        | N/A       |
+| Attribute       | Type    | Description                                                                                                           | Mandatory | Default |
+|-----------------|---------|-----------------------------------------------------------------------------------------------------------------------|-----------|---------|
+| label           | String  | The label for the input field.                                                                                        | Yes       | N/A     |
+| type            | String  | The input type (text, checkbox, select, date).                                                                        | Yes       | N/A     |
+| default         | Various | The default value for the input field.                                                                                | No        | `''`    |
+| mandatory       | Boolean | Whether the input field is mandatory (if the input of a mandatory text is empty, the text displayed will be default). | No        | `false` |
+| activeContent   | String  | Content to use when the checkbox is checked (only applicable for checkbox type).                                      | No        | `''`    |
+| inactiveContent | String  | Content to use when the checkbox is unchecked (only applicable for checkbox type).                                    | No        | `''`    |
+| template        | String  | A string with placeholders to be replaced by the value of another input (only applicable for text type).              | No        | `'$'`   |
 
 ### Functions
 
