@@ -82,12 +82,9 @@ export default {
         try {
           //replace already escaped <"\> with <\\\"> and then replace all <"> with <\">
           const functionFindRegex = /(\w+)\(.*\)}/g;
-          console.log(newValue)
           for(let match of newValue.matchAll(functionFindRegex)){
-            console.log(match)
             newValue = newValue.replace(match[0], match[0].replace(/(?<!\\)"/g, '\\\"'))
           }
-          console.log(newValue)
           this.data = JSON.parse(newValue)
           this.parsingError = false
         } catch (e) {

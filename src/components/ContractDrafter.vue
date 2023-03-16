@@ -357,7 +357,6 @@ export default {
           const contentArg = statement.match(/\[(.*?)\]/g)[0];
           let content = contentArg.replaceAll(/\[|\]/g, '');
           const contentArr = content.split(',').map(item => item.trim()).filter(item => item);
-          console.log(contentArr)
           const contentValues = contentArr.map(item => this.getFieldValue(jurisdictionKey, item)).filter(item => item.length > 0);
 
           statement = statement.replaceAll(contentArg, '');
@@ -417,7 +416,6 @@ export default {
       textToCopy = textToCopy.replaceAll(spanRegex, '$1');
       try {
         await navigator.clipboard.writeText(textToCopy);
-        console.log('Text copied to clipboard');
       } catch (err) {
         console.error('Failed to copy text: ', err);
       }
