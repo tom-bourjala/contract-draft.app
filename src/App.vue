@@ -14,7 +14,7 @@ export default {
   name: "App",
   data() {
     return {
-      isDocsShown: true
+      isDocsShown: false
     }
   }
 }
