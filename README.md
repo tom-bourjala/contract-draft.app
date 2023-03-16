@@ -1,8 +1,9 @@
-# Contract Drafter Documentation
+# Contract Drafter
 
 ## About
 
-Contract Drafter is a web app that allows users to customize contract clauses based on a contract template. It is built with Vue.js and Tailwind CSS.
+Contract Drafter is a web app that allows users to customize contract clauses based on a contract template. 
+It is built with Vue.js and Tailwind CSS.
 
 ## How to Use Contract Drafter Web App
 
@@ -16,15 +17,27 @@ Contract Drafter is a web app that allows users to customize contract clauses ba
 6. Click on the top right button to copy the resulting contract content to your clipboard.
 ## Constructing a Contract Template
 
-A contract template is a JSON object where each key represents a clause or a section of the contract. Each key has an associated JSON object that contains information about the clause, input fields, and formatting options. The general structure of a clause object looks like this:
+A contract template is a JSON object where each key represents a clause or a section of the contract. 
+
+Each key has an associated JSON object that contains information about the clause, input fields, and formatting options. The general structure of a clause object looks like this:
 
 ```json
 {
-  "label": "Label for the clause",
-  "input1": { /* ... */ },
-  "input2": { /* ... */ },
-  //...
-  "clause": "The text of the clause with placeholders for input values, like {{input1}}, {{input2}}, ...",
+   "clause1": {
+     "label": "Label for the clause",
+     "input1": { /* ... */ },
+     "input2": { /* ... */ },
+     //...
+     "clause": "The text of the clause with placeholders for input values, like {{input1}}, {{input2}}, ...",
+   },
+    "clause2": {
+      "label": "Label for the clause",
+      "input1": { /* ... */ },
+      "input2": { /* ... */ },
+      //...
+      "clause": "The text of the clause with placeholders for input values, like {{input1}}, {{input2}}, ...",
+    },
+    //...
 }
 ```
 
@@ -32,34 +45,49 @@ A contract template is a JSON object where each key represents a clause or a sec
 
 A clause is a part of the contract template that represents a paragraph or a section of the contract. It contains the text of the clause with placeholders for input values, which will be replaced with the actual input values when the contract is generated.
 
+#### Clause Attributes
+
+| Attribute | Type   | Description                                                                 | Mandatory | Default |
+|-----------|--------|-----------------------------------------------------------------------------|-----------|---------|
+| label     | String | The label for the clause.                                                   | Yes       | N/A     |
+| clause    | String | The text of the clause with placeholders for input values, like {{input1}}. | Yes       | N/A     |
+
 ### Inputs
 
 Inputs are the fields that allow users to customize the contract clauses. Each input has a unique key within the clause object and an associated JSON object that contains information about the input field, its type, label, and other attributes.
 
-#### Input Types
-
-There are four input types:
-
-1. **Text**: A simple text input field.
-2. **Checkbox**: A binary choice represented by a checkbox.
-3. **Select**: A dropdown list of options.
-4. **Date**: A date picker for selecting a date.
-
 #### Input Attributes
 
-| Attribute       | Type    | Description                                                                                                           | Mandatory | Default |
-|-----------------|---------|-----------------------------------------------------------------------------------------------------------------------|-----------|---------|
-| label           | String  | The label for the input field.                                                                                        | Yes       | N/A     |
-| type            | String  | The input type (text, checkbox, select, date).                                                                        | Yes       | N/A     |
-| default         | Various | The default value for the input field.                                                                                | No        | `''`    |
-| mandatory       | Boolean | Whether the input field is mandatory (if the input of a mandatory text is empty, the text displayed will be default). | No        | `false` |
-| activeContent   | String  | Content to use when the checkbox is checked (only applicable for checkbox type).                                      | No        | `''`    |
-| inactiveContent | String  | Content to use when the checkbox is unchecked (only applicable for checkbox type).                                    | No        | `''`    |
-| template        | String  | A string with placeholders to be replaced by the value of another input (only applicable for text type).              | No        | `'$'`   |
+| Attribute | Type    | Description                                                                                                           | Mandatory | Default |
+|-----------|---------|-----------------------------------------------------------------------------------------------------------------------|-----------|---------|
+| label     | String  | The label for the input field.                                                                                        | Yes       | N/A     |
+| type      | String  | The input type (text, checkbox...).                                                                                   | Yes       | N/A     |
+| mandatory | Boolean | Whether the input field is mandatory (if the input of a mandatory text is empty, the text displayed will be default). | No        | `false` |
+| template  | String  | A text template where the value of field will be inserted (example : `'such as $'`), allowing prefix/suffix text.     | No        | `'$'`   |
+
+#### Text
+
+The text input type is used to display a text input field. It takes the additional attributes:
+
+| Attribute       | Type   | Description                                       | Mandatory | Default |
+|-----------------|--------|---------------------------------------------------|-----------|---------|
+| default         | String | The default value of the input field.             | No        | `''`    |
+| inactiveContent | String | The text to be displayed when the input is empty. | No        | `''`    |
+
+#### checkbox
+
+The checkbox input type is used to display a checkbox input field. It takes the additional attributes:
+
+| Attribute       | Type    | Description                                           | Mandatory | Default |
+|-----------------|---------|-------------------------------------------------------|-----------|---------|
+| default         | Boolean | The default value of the input field.                 | No        | `false` |
+| inactiveContent | String  | The text to be displayed when the box is not checked. | No        | `''`    |
+| activeContent   | String  | The text to be displayed when the box is checked.     | No        | `''`    |
+
 
 ### Functions
 
-Functions are used to manipulate input values within a clause. Currently, there is one function available: `join`.
+Functions are used to manipulate input values within a clause, mostly to concatenate multiple input values with a delimiter. They are used within the `clause` attribute of a clause object.
 
 #### Join
 
@@ -74,7 +102,7 @@ The `join` function is used to join an array of input values with a specified de
 join([input1, input2, ...], "delimiter", "prefix", "suffix")
 ```
 
-Example:
+***Example:***
 
 ```json
 {
@@ -114,7 +142,7 @@ It takes four arguments:
 combine([input1, input2, ...], "prefix", "suffix", "default")
 ```
 
-Example:
+***Example:***
 
 ```json
 {
@@ -139,6 +167,89 @@ The resulting clause would be:
 ```
 This Agreement includes schedules, exhibits and attachments.
 ```
+
+### Contract Template Example
+
+Here 
+
+```json
+{
+  "jurisdiction": {
+    "label": "Jurisdiction",
+    "state": {
+      "type": "text",
+      "label": "State",
+      "default": "[...]",
+      "mandatory": true
+    },
+    "county": {
+      "type": "text",
+      "label": "County"
+    },
+    "city": {
+      "type": "text",
+      "label": "City",
+      "default": "[...]"
+    },
+    "courtLevel": {
+      "type": "text",
+      "label": "Court Level"
+    },
+    "asExclusiveJurisdiction": {
+      "type": "checkbox",
+      "label": "As Exclusive Jurisdiction",
+      "activeContent": "exclusive",
+      "inactiveContent": "non-exclusive"
+    },
+    "clause": "Each party to this Agreement irrevocably agrees that the courts {{courtLevel}} of {{join([state, county, city], \", \")}} shall have {{asExclusiveJurisdiction}} jurisdiction to hear, settle and/or determine any dispute, controversy or claim including any non-contractual dispute, controversy or claim arising out or in connection with this Agreement, including any question regarding its existence, validity, formation or termination."
+  },
+  "choiceOfLaw": {
+    "label": "Choice of Law",
+    "choiceOfLaw": {
+      "type": "text",
+      "label": "Choice of Law",
+      "default": "[...]"
+    },
+    "exclusionOfLaw": {
+      "type": "text",
+      "label": "Exclusion of Law",
+      "default": "",
+      "inactiveContent": "",
+      "template": "The $ shall not apply."
+    },
+    "contractContainSchedules": {
+      "type": "checkbox",
+      "label": "Contract contain schedules",
+      "default": false,
+      "activeContent": "schedules",
+      "inactiveContent": ""
+    },
+    "contractContainExhibits": {
+      "type": "checkbox",
+      "label": "Contract contain exhibits",
+      "default": false,
+      "activeContent": "exhibits",
+      "inactiveContent": ""
+    },
+    "contractContainAppendices": {
+      "type": "checkbox",
+      "label": "Contract contain appendices",
+      "default": false,
+      "activeContent": "appendices",
+      "inactiveContent": ""
+    },
+    "contractContainAttachments": {
+      "type": "checkbox",
+      "label": "Contract contain attachments",
+      "default": false,
+      "activeContent": "attachments",
+      "inactiveContent": ""
+    },
+    "clause": "This Agreement and all related documents including all {{combine([contractContainSchedules, contractContainExhibits, contractContainAppendices, contractContainAttachments], \"\", \" and all\")}} claims or causes of action (whether in contract, tort or statue) that may based upon, arise out of or related to this Agreement or the negotiation, execution or performance of this Agreement (including any claim or cause of action based upon, arising out of or related to any representation or warranty made in or in connection with this Agreement or as inducement to enter into this Agreement), shall be governed by and enforced in accordance with the laws of {{choiceOfLaw}} including its statutes of limitations and procedural rules without giving effect to the conflicts of law principles, rules or provisions of such state hereof to the extent such principles, rules or provisions would require or allow the application of the laws of any jurisdictions other than those of {{choiceOfLaw}}. {{exclusionOfLaw}}"
+  }
+}
+```
+
 ## Project Setup
 
 ```sh
