@@ -21,9 +21,9 @@ A contract template is a JSON object where each key represents a clause or a sec
 ```json
 {
   "label": "Label for the clause",
-  "input1": { ... },
-  "input2": { ... },
-  ...
+  "input1": { /* ... */ },
+  "input2": { /* ... */ },
+  //...
   "clause": "The text of the clause with placeholders for input values, like {{input1}}, {{input2}}, ...",
 }
 ```
@@ -80,7 +80,7 @@ Example:
 ```json
 {
    "includes":{
-      ...
+      //...
      "clause": "This agreement includes {{join([contractContainSchedules, contractContainExhibits, contractContainAppendices, contractContainAttachments], ', ', 'the following: ', '.')}}"
    }
 }
@@ -120,7 +120,7 @@ Example:
 ```json
 {
    "includes":{
-      ...
+      //...
       "clause": "This agreement includes {{combine([contractContainSchedules, contractContainExhibits, contractContainAppendices, contractContainAttachments])}}"
    }
 }
