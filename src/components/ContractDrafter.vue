@@ -1,5 +1,8 @@
 <template>
-  <h1 class="webTitle">Contract Drafter</h1>
+  <h1 class="webTitle">
+    <img src="@/assets/logo.svg" alt="logo" style="width: 50px; height: 50px; margin-right: 10px; cursor: pointer" @click="template = null">
+    Contract Drafter
+  </h1>
   <ContractFileModal v-if="!template" @load="loadTemplate"/>
   <ErrorModal :text="errorDisplay" v-if="errorDisplay" @close="errorDisplay = ''; template = null"/>
   <div class="panel-container" v-if="template">
