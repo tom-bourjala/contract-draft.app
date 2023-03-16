@@ -1,11 +1,19 @@
 <template>
   <ADialog
       v-model="isDialogShown"
-      title="Contract Draft Template Loader"
       subtitle="To start, please put your contract draft template in the box below."
       class="w-[800px]"
       persistent
   >
+    <template #title>
+      <div class="flex justify-between">
+        <span>Contract Draft Template Loader</span>
+        <div class="flex items-center gap-x-3 text-base text-light-emphasis">
+          <i class="cursor-pointer i-bx-bxs-help-circle text-info" @click="$emit('docs')" title="See Documentation" />
+          <i class="cursor-pointer i-bx-reset text-warning" @click="JSONFile = ''" title="Reset" />
+        </div>
+      </div>
+    </template>
     <div class="a-card-body">
       <textarea v-if="parsingError || !data"
           v-model="JSONFile"
@@ -54,7 +62,7 @@ import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 export default {
   name: "ContractFileModal",
-  emits: ['load'],
+  emits: ['load', 'docs'],
   components: {
     VueJsonPretty,
   },
