@@ -167,7 +167,6 @@ function customValidator(json) {
     return errors;
 }
 
-
 export function customValidation(json) {
     ajvValidator(json);
     let ajvErrors = ajvValidator.errors || [];
@@ -175,4 +174,33 @@ export function customValidation(json) {
     if(ajvErrors.length) return ajvErrors;
     const customErrors = customValidator(json);
     return customErrors;
+}
+
+export function autoFixRequired(json){
+    const newJson = JSON.parse(JSON.stringify(json));
+    for (let key in newJson) {
+        const clause = newJson[key]
+        if(typeof clause == 'object'){
+            if(!clause.hasOwnProperty('clause')){
+                clause.clause = '';
+            }
+            if(!clause.hasOwnProperty('label')){
+                clause.label = '';
+            }
+            for (let key in clause) {
+                if(key == 'clause' || key == 'label') continue;
+                const field = clause[key];
+                if(typeof field == 'object'){
+                    if(!field.hasOwnProperty('type')){
+                        field.type = '';
+                    }
+                    if(!field.hasOwnProperty('label')){
+                        field.label = '';
+                    }
+                }
+            }
+        }
+    }
+    if(JSON.stringify(json) === JSON.stringify(newJson)) return json;
+    return newJson;
 }

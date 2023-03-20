@@ -47,6 +47,8 @@ import {customValidation} from '@/logic/validation.js';
 
 <script>
 
+import {autoFixRequired} from "@/logic/validation";
+
 export default {
   name: "ContractFileModal",
   emits: ['load', 'docs'],
@@ -72,15 +74,29 @@ export default {
           return
         }
         try {
-          //replace already escaped <"\> with <\\\"> and then replace all <"> with <\">
-          const functionFindRegex = /(\w+)\(.*\)}/g;
-          for(let match of newValue.matchAll(functionFindRegex)){
-            newValue = newValue.replace(match[0], match[0].replace(/(?<!\\)"/g, '\\\"'))
+          if(newValue){
+            //replace already escaped <"\> with <\\\"> and then replace all <"> with <\">
+            const functionFindRegex = /(\w+)\(.*\)}/g;
+            const result = newValue.matchAll(functionFindRegex);
+            if(result){
+              for(let match of result){
+                newValue = newValue.replace(match[0], match[0].replace(/(?<!\\)"/g, '\\\"'))
+              }
+            }
           }
           this.data = JSON.parse(newValue)
           const errors = customValidation(this.data);
-          console.log('errors:',errors);
           this.parsingError = errors.length > 0
+          try{
+            //setTimeout(() => {
+            //  const fixedJSONFile = autoFixRequired(this.data);
+            //  if(JSON.stringify(fixedJSONFile) !== JSON.stringify(this.data)){
+            //    this.JSONFile = fixedJSONFile;
+            //}
+            //}, 5)
+          } catch (e) {
+            console.log(e)
+          }
         } catch (e) {
           console.log(e)
           this.parsingError = true
