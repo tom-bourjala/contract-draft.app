@@ -284,6 +284,7 @@ export default {
 
             statement = statement.replaceAll(contentArg, '');
             let args = statement.match(/'(.*?)'|"(.*?)"|`(.*?)`/g);
+            args =  args ? args : [];
             if (args.length > 3) {
               return this.errorDisplay = 'The combine statement <b>"' + combine[0] + '"</b> of the clause <b>"' + key + '"</b> has too many arguments. The combine statement should have a maximum of 4 arguments. (format: combine([content,...], prefix, suffix, default))';
             }
