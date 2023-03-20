@@ -4,6 +4,8 @@ import { anu } from 'anu-vue'
 
 import './assets/main.css'
 import './assets/markdown.css'
+import './assets/json.css'
+
 // UnoCSS import
 import 'uno.css'
 
