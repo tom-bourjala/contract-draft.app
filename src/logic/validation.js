@@ -55,6 +55,31 @@ function customValidator(json) {
         });
     }
 
+    for(let key in json) {
+        const inputs = json[key];
+        for(let inputKey in inputs) {
+            if(inputKey === 'label' || inputKey === 'clause') continue;
+
+            const input = inputs[inputKey];
+            if(input.type === 'checkbox') {
+                if(!input.activeContent && !input.inactiveContent) {
+                    errors.push({
+                        path: [key, inputKey],
+                        message: 'Either the activeContent or inactiveContent property must be set.',
+                    });
+                }
+            }
+            if(input.type === 'text') {
+                if(input.template && !input.template.includes('$')) {
+                    errors.push({
+                        path: [key, inputKey],
+                        message: 'The template must contain at least one $ character.',
+                    });
+                }
+            }
+        }
+    }
+
     for (let key in json) {
         const clause = json[key].clause;
 
