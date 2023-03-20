@@ -1,8 +1,13 @@
+<script setup>
+import JsonEditorVue from 'json-editor-vue';
+import {customValidation} from '@/logic/validation.js';
+</script>
+
 <template>
   <ADialog
       v-model="isDialogShown"
       subtitle="To start, please put your contract draft template in the box below."
-      class="w-[800px]"
+      class="w-[80vw]"
       persistent
   >
     <template #title>
@@ -15,25 +20,8 @@
       </div>
     </template>
     <div class="a-card-body">
-      <textarea v-if="parsingError || !data"
-          v-model="JSONFile"
-          class="w-full h-60 p-4 text-sm rounded-lg JSONFile"
-      >
-      </textarea>
-      <vue-json-pretty v-if="!parsingError && data" :data="data" class="JSONFile"
-                       :showLine="false"
-                       :showDoubleQuotes="false"
-                       :virtual="true"
-                       :editable="true"
-      ></vue-json-pretty>
-      <AAlert
-          v-if="parsingError"
-          color="danger"
-          variant="outline"
-          style="margin:20px 0px 20px 0px"
-      >
-        An error occurred while parsing the file.
-      </AAlert>
+      <JsonEditorVue v-model="JSONFile" class="jse-theme-dark"
+        mode="text" :validator="customValidation" />
       <ABtn
           variant="light"
           class="text-sm mr-2"
@@ -58,19 +46,15 @@
 </template>
 
 <script>
-import VueJsonPretty from 'vue-json-pretty';
-import 'vue-json-pretty/lib/styles.css';
+
 export default {
   name: "ContractFileModal",
   emits: ['load', 'docs'],
-  components: {
-    VueJsonPretty,
-  },
   data() {
     return {
       isDialogShown: true,
       parsingError: false,
-      JSONFile: '',
+      JSONFile: undefined,
       data: null
     }
   },
@@ -94,7 +78,9 @@ export default {
             newValue = newValue.replace(match[0], match[0].replace(/(?<!\\)"/g, '\\\"'))
           }
           this.data = JSON.parse(newValue)
-          this.parsingError = false
+          const errors = customValidation(this.data);
+          console.log('errors:',errors);
+          this.parsingError = errors.length > 0
         } catch (e) {
           console.log(e)
           this.parsingError = true
@@ -106,25 +92,30 @@ export default {
 }
 </script>
 
-<style scoped>
-.JSONFile {
-  background-color: #1e1e1e;
-  color: #d4d4d4;
-  border: 1px solid #3a3a3a;
-  margin: 10px 0px 10px 0px;
-  color-scheme: dark;
-}
-</style>
-
 <style>
-.vjs-tree{
+
+.jse-theme-dark{
+  height: 50vh;
   margin: 10px 0px 10px 0px;
-  padding: 10px;
-  color-scheme: dark;
 }
 
-.vjs-tree-node.is-highlight,
-.vjs-tree-node:hover {
-  background-color: #1a1a1a;
+.jse-group-button{
+  display: none;
+}
+
+.jse-separator{
+  display: none;
+}
+
+.jse-sort{
+  display: none;
+}
+
+.jse-transform{
+  display: none;
+}
+
+.jse-main{
+  height: 50%;
 }
 </style>
