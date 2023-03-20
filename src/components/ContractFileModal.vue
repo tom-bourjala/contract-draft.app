@@ -20,8 +20,6 @@ import {customValidation} from '@/logic/validation.js';
       </div>
     </template>
     <div class="a-card-body">
-      {{ parsingError ? "Parsing Error" : "Paste your template here" }}
-      {{ JSONFile ? " (Valid)" : " (Empty)" }}
       <JsonEditorVue v-model="JSONFile" class="jse-theme-dark"
         mode="text" :validator="customValidation" />
       <ABtn
