@@ -20,6 +20,8 @@ import {customValidation} from '@/logic/validation.js';
       </div>
     </template>
     <div class="a-card-body">
+      {{ parsingError ? "Parsing Error" : "Paste your template here" }}
+      {{ JSONFile ? " (Valid)" : " (Empty)" }}
       <JsonEditorVue v-model="JSONFile" class="jse-theme-dark"
         mode="text" :validator="customValidation" />
       <ABtn
@@ -29,7 +31,7 @@ import {customValidation} from '@/logic/validation.js';
           :disabled="parsingError || JSONFile === ''"
           @click="loadFile"
       >
-        Load Template
+        {{toEditData ? "Edit Template" : "Load Template"}}
       </ABtn>
       <ABtn
           variant="light"
@@ -50,6 +52,7 @@ import {customValidation} from '@/logic/validation.js';
 import {autoFixRequired} from "@/logic/validation";
 
 export default {
+  props: ['toEditData'],
   name: "ContractFileModal",
   emits: ['load', 'docs'],
   data() {
@@ -103,6 +106,15 @@ export default {
         }
       },
       immediate: true
+    }
+  },
+  mounted() {
+    if(this.toEditData){
+      this.JSONFile = this.toEditData
+      setTimeout(() => {
+        this.data = this.toEditData
+        this.parsingError = false
+      }, 40)
     }
   }
 }
