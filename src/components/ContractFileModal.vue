@@ -121,7 +121,7 @@ export default {
 <style>
 
 .jse-theme-dark{
-  height: 50vh;
+  height: 70vh;
   margin: 10px 0px 10px 0px;
 }
 
@@ -142,6 +142,6 @@ export default {
 }
 
 .jse-main{
-  height: 50%;
+  height: 80%;
 }
 </style>
