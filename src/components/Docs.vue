@@ -1,6 +1,6 @@
 <template>
   <h1 class="webTitle">
-    <img src="@/assets/logo.svg" alt="logo" style="width: 50px; height: 50px; cursor: pointer" @click="$emit('close')" />
+    <img src="@/assets/logo.svg" alt="logo" style="width: 50px; height: 50px; cursor: pointer" @click="this.$router.push('/')" />
     <span style="margin-left: 20px"> Contract Drafter </span>
   </h1>
   <div class="markdown-body">
@@ -22,7 +22,6 @@ const URL = "https://raw.githubusercontent.com/TerraS77/contract-drafter/main/RE
 
 export default {
   name: "docs.vue",
-  emits: ['close'],
   components: {
     VueMarkdown
   },

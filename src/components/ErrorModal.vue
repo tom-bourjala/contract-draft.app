@@ -10,7 +10,7 @@
       <div class="flex justify-between">
         <span>Parsing Error</span>
         <div class="flex items-center gap-x-3 text-base text-light-emphasis">
-          <i class="cursor-pointer i-bx-bxs-help-circle text-info" @click="isDialogShown = false; $emit('docs')" title="See Documentation" />
+          <i class="cursor-pointer i-bx-bxs-help-circle text-info" @click="this.$router.push('/docs')" title="See Documentation" />
           <i class="cursor-pointer i-bx-x text-danger typography-title-danger typography-subtitle-danger typography-text-danger" @click="isDialogShown = false" title="Close" />
         </div>
       </div>
@@ -28,7 +28,7 @@ export default {
       required: true
     }
   },
-  emits: ['close', 'docs'],
+  emits: ['close'],
   watch: {
     isDialogShown: {
       handler: function (newValue) {

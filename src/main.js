@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import App from './App.vue'
 import { anu } from 'anu-vue'
+import {createRouter, createWebHistory} from 'vue-router'
 
 import './assets/main.css'
 import './assets/markdown.css'
@@ -15,7 +15,22 @@ import 'anu-vue/dist/style.css'
 // default theme styles
 import '@anu-vue/preset-theme-default/dist/style.css'
 
-// Using `app.use(anu)` will register all the components globally
+//Routes
+import App from './components/App.vue'
+import Docs from './components/Docs.vue'
+import ContractDrafter from "./components/ContractDrafter.vue";
+
+const routes = [
+    { path: '/', component: ContractDrafter },
+    { path: '/docs', component: Docs },
+]
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+})
+
 createApp(App)
+    .use(router)
     .use(anu)
     .mount('#app')

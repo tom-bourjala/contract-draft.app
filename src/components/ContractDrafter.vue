@@ -3,8 +3,8 @@
     <img src="@/assets/logo.svg" alt="logo" style="width: 50px; height: 50px; margin-right: 10px; cursor: pointer" @click="editing = true">
     Contract Drafter
   </h1>
-  <ContractFileModal :toEditData="template" v-if="!template || editing" @load="loadTemplate" @docs="$emit('docs')"/>
-  <ErrorModal :text="errorDisplay" v-if="errorDisplay" @close="errorDisplay = ''; template = null" @docs="$emit('docs')"/>
+  <ContractFileModal :toEditData="template" v-if="!template || editing" @load="loadTemplate"/>
+  <ErrorModal :text="errorDisplay" v-if="errorDisplay" @close="errorDisplay = ''; template = null"/>
   <div class="panel-container" v-if="template">
     <div class="panel-left">
       <div v-for="(content, clause) in template">
@@ -62,7 +62,6 @@ import ErrorModal from "@/components/ErrorModal.vue";
 export default {
   name: 'ContractDrafter',
   components: {ErrorModal, ContractFileModal},
-  emits: ['docs'],
   data() {
     return {
       errorDisplay: '',
