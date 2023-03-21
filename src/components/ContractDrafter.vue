@@ -58,9 +58,11 @@
 <script>
 import ContractFileModal from "@/components/ContractFileModal.vue";
 import ErrorModal from "@/components/ErrorModal.vue";
+import {decompressLZS} from "@/logic/compression";
 
 export default {
   name: 'ContractDrafter',
+  props: ["routeEditing", "routeTemplate"],
   components: {ErrorModal, ContractFileModal},
   data() {
     return {
@@ -69,6 +71,21 @@ export default {
       templateInputs: {},
       template:null,
       editing:true
+    }
+  },
+  beforeMount() {
+    if (this.routeTemplate) {
+      try{
+        let template = decompressLZS(this.routeTemplate)
+        template = JSON.parse(template);
+        this.loadTemplate(template);
+        this.initTemplateInputs();
+      }catch (e){
+        this.errorDisplay = e;
+      }
+    }
+    if (this.routeTemplate && this.routeEditing) {
+      this.editing = true;
     }
   },
   watch: {
@@ -296,6 +313,7 @@ export default {
       }
     },
     loadTemplate: function (data) {
+      if(typeof data === 'string') data = JSON.parse(data);
       this.testTemplate(data);
       this.template = data;
       this.editing = false;
