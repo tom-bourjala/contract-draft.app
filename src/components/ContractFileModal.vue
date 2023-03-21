@@ -14,7 +14,7 @@ import {customValidation} from '@/logic/validation.js';
       <div class="flex justify-between">
         <span>Contract Draft Template Loader</span>
         <div class="flex items-center gap-x-3 text-base text-light-emphasis">
-          <i class="cursor-pointer i-bx-bxs-help-circle text-info" @click="this.$router.push('/docs')" title="See Documentation" />
+          <i class="cursor-pointer i-bx-bxs-help-circle text-info" @click="$router.push('/docs')" title="See Documentation" />
           <i class="cursor-pointer i-bx-reset text-warning" @click="JSONFile = ''" title="Reset" />
           <i v-if="toEditData" class="cursor-pointer i-bx-x text-danger typography-title-danger typography-subtitle-danger typography-text-danger" @click="cancelEdit" title="Close" />
         </div>
