@@ -21,7 +21,7 @@ import Docs from './components/Docs.vue'
 import ContractDrafter from "./components/ContractDrafter.vue";
 
 const routes = [
-    { path: '/', component: ContractDrafter },
+    { path: '/', component: ContractDrafter, props: route => ({ routeTemplate: route.query.t, routeEditing: route.query.edit }) },
     { path: '/docs', component: Docs },
 ]
 
