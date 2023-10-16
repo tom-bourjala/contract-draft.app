@@ -42,7 +42,7 @@
       </div>
     </div>
     <div class="panel-right">
-      <div id="draft-output" :innerHTML="draftOutput"></div>
+      <div id="draft-output" :innerHTML=" draftOutput.replaceAll('\n', '<br>') "></div>
       <div class="copy-button">
         <ABtn
             icon="i-bx-bxs-copy-alt"
