@@ -76,8 +76,6 @@ import ContractFileModal from "@/components/ContractFileModal.vue";
 import ErrorModal from "@/components/ErrorModal.vue";
 import {decompressLZS} from "@/logic/compression";
 
-const validTypes = ['text', 'textarea', 'checkbox'];
-
 export default {
   name: 'ContractDrafter',
   props: ["routeEditing", "routeTemplate"],
@@ -88,7 +86,8 @@ export default {
       draftOutput: '',
       templateInputs: {},
       template:null,
-      editing:true
+      editing:true,
+      validInputTypes:['text', 'textarea', 'checkbox']
     }
   },
   beforeMount() {
@@ -235,7 +234,7 @@ export default {
             if (!template[key][key2].type) {
               return this.errorDisplay = 'The input <b>"' + key2 + '"</b> of the clause <b>"' + key + '"</b> is missing a type. Every clause input should have a type property, as the type of the clause input.';
             }
-            if (!validTypes.includes(template[key][key2].type)) {
+            if (!this.validInputTypes.includes(template[key][key2].type)) {
               return this.errorDisplay = 'The input <b>"' + key2 + '"</b> of the clause <b>"' + key + '"</b> has an invalid type. The type property should be one of the following:' + validTypes.join(', ') + '.';
             }
           }
