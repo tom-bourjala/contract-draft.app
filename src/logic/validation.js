@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import AjvErrors from 'ajv-errors';
 
 const schema = {
     "type": "object",
@@ -15,7 +16,8 @@ const schema = {
                     "properties": {
                         "type": {
                             "type": "string",
-                            "enum": ["text", "textarea", "checkbox"]
+                            "enum": ["text", "textarea", "checkbox"],
+                            "errorMessage": "${0#} is not a recognized input type"
                         },
                         "label": { "type": "string", "minLength": 1 },
                         "default": { "type": ["string", "boolean", "null"] },
@@ -24,18 +26,41 @@ const schema = {
                         "activeContent": { "type": ["string", "null"] },
                         "template": { "type": "string" }
                     },
-                    "additionalProperties": false,
-                    "required": ["type", "label"]
+                    "additionalProperties": {
+                        "not": true,
+                        "errorMessage": "${0#} is not a recognized input property.",
+                    },
+                    "required": ["type", "label"],
+                    "errorMessage": {
+                        "required": {
+                            "type": "An input should have a field type.",
+                            "label": "An input should have a label."
+                        },
+                    }
                 }
             },
-            "additionalProperties": false,
-            "required": ["label", "clause"]
+            "additionalProperties": {
+                "not": true,
+                "errorMessage": "${0#} is not a recognized property.",
+            },
+            "required": ["label", "clause"],
+            "errorMessage": {
+                "required": {
+                    "label": "A label is required.",
+                    "clause": "A clause is required."
+                },
+            }
         }
     },
-    "additionalProperties": false
+    "additionalProperties": false,
+    "errorMessage": {
+        "additionalProperties": "No additional properties allowed at root."
+    }
 };
 
+
 const ajv = new Ajv({ allErrors: true, allowMatchingProperties: true });
+AjvErrors(ajv);
 
 const ajvValidator = ajv.compile(schema);
 
