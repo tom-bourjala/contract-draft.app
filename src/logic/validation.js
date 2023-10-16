@@ -15,7 +15,7 @@ const schema = {
                     "properties": {
                         "type": {
                             "type": "string",
-                            "enum": ["text", "checkbox"]
+                            "enum": ["text", "textarea", "checkbox"]
                         },
                         "label": { "type": "string", "minLength": 1 },
                         "default": { "type": ["string", "boolean", "null"] },
@@ -36,6 +36,7 @@ const schema = {
 };
 
 const ajv = new Ajv({ allErrors: true, allowMatchingProperties: true });
+
 const ajvValidator = ajv.compile(schema);
 
 function ajvErrorToValidationError(error) {
@@ -69,7 +70,7 @@ function customValidator(json) {
                     });
                 }
             }
-            if(input.type === 'text') {
+            if(input.type === 'text' | input.type === 'textarea') {
                 if(input.template && !input.template.includes('$')) {
                     errors.push({
                         path: [key, inputKey],

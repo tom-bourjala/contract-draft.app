@@ -69,13 +69,22 @@ Inputs are the fields that allow users to customize the contract clauses. Each i
 | Attribute | Type    | Description                                                                                                           | Mandatory | Default |
 |-----------|---------|-----------------------------------------------------------------------------------------------------------------------|-----------|---------|
 | label     | String  | The label for the input field.                                                                                        | Yes       | N/A     |
-| type      | String  | The input type (text, checkbox...).                                                                                   | Yes       | N/A     |
+| type      | String  | The input type (text, checkbox, textarea...).                                                                         | Yes       | N/A     |
 | mandatory | Boolean | Whether the input field is mandatory (if the input of a mandatory text is empty, the text displayed will be default). | No        | `false` |
 | template  | String  | A text template where the value of field will be inserted (example : `'such as $'`), allowing prefix/suffix text.     | No        | `'$'`   |
 
 #### Text
 
 The text input type is used to display a text input field. It takes the additional attributes:
+
+| Attribute       | Type   | Description                                       | Mandatory | Default |
+|-----------------|--------|---------------------------------------------------|-----------|---------|
+| default         | String | The default value of the input field.             | No        | `''`    |
+| inactiveContent | String | The text to be displayed when the input is empty. | No        | `''`    |
+
+#### Textarea
+
+The textarea input type is used to display a textarea input field. It takes the additional attributes:
 
 | Attribute       | Type   | Description                                       | Mandatory | Default |
 |-----------------|--------|---------------------------------------------------|-----------|---------|

@@ -27,6 +27,22 @@
                 </label>
               </template>
             </AInput>
+            <ATextarea
+                v-else-if="input.type == 'textarea'"
+                :label="input.label"
+                v-model="templateInputs[clause][key].value"
+                @mouseenter="templateInputs[clause][key].highlight = true"
+                @mouseleave="templateInputs[clause][key].highlight = false"
+                @focusin="templateInputs[clause][key].highlight = true"
+                @focusout="templateInputs[clause][key].highlight = false"
+            >
+              <template #label v-if="input.mandatory">
+                <label for="a-input-form-x">
+                  <span>{{input.label}}</span>
+                  <span class="text-red"> *</span>
+                </label>
+              </template>
+            </ATextarea>
             <ACheckbox v-else-if="input.type == 'checkbox'"
                        class="a-base-input-root a-checkbox-root text-l"
                        v-model="templateInputs[clause][key].value"
@@ -59,6 +75,8 @@
 import ContractFileModal from "@/components/ContractFileModal.vue";
 import ErrorModal from "@/components/ErrorModal.vue";
 import {decompressLZS} from "@/logic/compression";
+
+const validTypes = ['text', 'textarea', 'checkbox'];
 
 export default {
   name: 'ContractDrafter',
@@ -217,8 +235,8 @@ export default {
             if (!template[key][key2].type) {
               return this.errorDisplay = 'The input <b>"' + key2 + '"</b> of the clause <b>"' + key + '"</b> is missing a type. Every clause input should have a type property, as the type of the clause input.';
             }
-            if (!['text', 'checkbox'].includes(template[key][key2].type)) {
-              return this.errorDisplay = 'The input <b>"' + key2 + '"</b> of the clause <b>"' + key + '"</b> has an invalid type. The type property should be one of the following: text, checkbox.';
+            if (!validTypes.includes(template[key][key2].type)) {
+              return this.errorDisplay = 'The input <b>"' + key2 + '"</b> of the clause <b>"' + key + '"</b> has an invalid type. The type property should be one of the following:' + validTypes.join(', ') + '.';
             }
           }
         }
