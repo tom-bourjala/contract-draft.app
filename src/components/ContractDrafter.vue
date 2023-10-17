@@ -74,7 +74,7 @@
 <script>
 import ContractFileModal from "@/components/ContractFileModal.vue";
 import ErrorModal from "@/components/ErrorModal.vue";
-import {decompressLZS} from "@/logic/compression";
+import {decompressJSON} from "@/logic/compression";
 
 export default {
   name: 'ContractDrafter',
@@ -93,8 +93,7 @@ export default {
   beforeMount() {
     if (this.routeTemplate) {
       try{
-        let template = decompressLZS(this.routeTemplate)
-        template = JSON.parse(template);
+        let template = decompressJSON(this.routeTemplate)
         this.loadTemplate(template);
         this.initTemplateInputs();
       }catch (e){

@@ -49,7 +49,7 @@ import {customValidation} from '@/logic/validation.js';
 <script>
 
 import {autoFixRequired} from "@/logic/validation";
-import {compressLZS} from "@/logic/compression";
+import {compressJSON} from "@/logic/compression";
 
 export default {
   props: ['toEditData'],
@@ -66,8 +66,7 @@ export default {
   methods: {
     loadFile() {
       if(typeof this.data === 'object'){
-        let templateString = JSON.stringify(this.data);
-        templateString = compressLZS(templateString);
+        const templateString = compressJSON(this.data);
         this.$router.replace({path : '/', query : {t: templateString}});
         setTimeout(() => {
           this.$router.go()
