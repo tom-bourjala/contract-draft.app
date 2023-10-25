@@ -54,7 +54,7 @@ const schema = {
     },
     "additionalProperties": false,
     "errorMessage": {
-        "additionalProperties": "No additional properties at root. (Possible format error : Spaces and special chars forbidden in keys)",
+        "additionalProperties": "No additional properties at root. (Format error : Spaces/special chars banned in keys)",
     }
 };
 
