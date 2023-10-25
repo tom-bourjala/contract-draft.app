@@ -17,7 +17,7 @@ const schema = {
                         "type": {
                             "type": "string",
                             "enum": ["text", "textarea", "checkbox"],
-                            "errorMessage": "${0#} is not a recognized input type"
+                            "errorMessage": "${0} is not a recognized input type"
                         },
                         "label": { "type": "string", "minLength": 1 },
                         "default": { "type": ["string", "boolean", "null"] },
@@ -54,7 +54,7 @@ const schema = {
     },
     "additionalProperties": false,
     "errorMessage": {
-        "additionalProperties": "No additional properties allowed at root."
+        "additionalProperties": "No additional properties at root. (Possible format error : Spaces and special chars forbidden in keys)",
     }
 };
 
