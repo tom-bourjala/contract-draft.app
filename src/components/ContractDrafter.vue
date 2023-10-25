@@ -10,6 +10,7 @@
       <div v-for="(content, clause) in template">
         <div class="panel-topic">
           <h2>{{content.label}}</h2>
+          <h2 v-if="clause === 'common'">Common</h2>
           <div v-for="(input, key) in content">
             <AInput
                 v-if="input.type == 'text'"
@@ -129,18 +130,37 @@ export default {
   },
   methods: {
     "getFieldValue"(jurisdiction, key) {
-      let userInput = this.templateInputs[jurisdiction][key].value;
-      const highlight = this.templateInputs[jurisdiction][key].highlight;
-      let template = this.template[jurisdiction][key].template;
-      let activeContent = this.template[jurisdiction][key].activeContent;
-      let inactiveContent = this.template[jurisdiction][key].inactiveContent;
-      const mandatory = this.template[jurisdiction][key].mandatory;
+      //if key starts with "$" it's a common field
+      let userInput = null;
+      let highlight = null;
+      let template = null;
+      let activeContent = null;
+      let inactiveContent = null;
+      let mandatory = null;
+      let type = null;
 
+      if (key.startsWith('$')){
+        key = key.replace('$', '');
+        userInput = this.templateInputs.common[key].value;
+        highlight = this.templateInputs.common[key].highlight;
+        template = this.template.common[key].template;
+        activeContent = this.template.common[key].activeContent;
+        inactiveContent = this.template.common[key].inactiveContent;
+        mandatory = this.template.common[key].mandatory;
+        type = this.template.common[key].type;
+      } else {
+        userInput = this.templateInputs[jurisdiction][key].value;
+        highlight = this.templateInputs[jurisdiction][key].highlight;
+        template = this.template[jurisdiction][key].template;
+        activeContent = this.template[jurisdiction][key].activeContent;
+        inactiveContent = this.template[jurisdiction][key].inactiveContent;
+        mandatory = this.template[jurisdiction][key].mandatory;
+        type = this.template[jurisdiction][key].type;
+      }
       if(!inactiveContent) inactiveContent = '';
       if(!activeContent) activeContent = '';
       if(!template) template = '$';
 
-      const type = this.template[jurisdiction][key].type;
       let value = '';
 
       if (type === 'checkbox') {
@@ -215,6 +235,7 @@ export default {
 
       //check if the template every clause has a label and a clause property
       for (let key in template) {
+        if(key === "common") continue;
         if (!template[key].label) {
           return this.errorDisplay = 'The clause <b>"' + key + '"</b> is missing a label. Every clause should have a label property, as the display name of the clause.';
         }
@@ -225,6 +246,7 @@ export default {
 
       //check if every clause input has a label and a valid type
       for (let key in template) {
+        if(key === "common") continue;
         for (let key2 in template[key]) {
           if (key2 !== 'label' && key2 !== 'clause') {
             if (!template[key][key2].label) {
@@ -242,6 +264,7 @@ export default {
 
       //check if every clause input has a valid template
       for (let key in template) {
+        if(key === "common") continue;
         for (let key2 in template[key]) {
           if (key2 !== 'label' && key2 !== 'clause') {
             if (template[key][key2].template) {
@@ -256,6 +279,7 @@ export default {
       //join statements are defined such as join([content,...], separator, prefix, suffix)
       //check if every join statement has a valid format
       for (let key in template) {
+        if(key === "common") continue;
         try{
           const clause = template[key].clause;
           const joinRegex = /{{join\((.*?)\)}}/g;
@@ -297,6 +321,7 @@ export default {
       //combine statements are defined such as iterate([content,...], prefix, suffix, default)
       //check if every combine statement has a valid format
       for (let key in template) {
+        if(key === "common") continue;
         try{
           const clause = template[key].clause;
           const combineRegex = /{{combine\((.*?)\)}}/g;
@@ -336,7 +361,9 @@ export default {
     },
     updateDraftOutput: function () {
       let draftOutput = '';
+      const common = this.template.common;
       for (let jurisdictionKey in this.template) {
+        if(jurisdictionKey === "common") continue;
         let jurisdiction = this.template[jurisdictionKey];
         let clause = jurisdiction.clause;
         draftOutput += '<h1>' + jurisdiction.label + '</h1>';
@@ -347,6 +374,12 @@ export default {
             const clauseRegex = new RegExp('{{' + key + '}}', 'g');
             clause = clause.replaceAll(clauseRegex, value);
           }
+        }
+
+        for(let key in common){
+          const value = this.getFieldValue('common', key);
+          const clauseRegex = new RegExp('{{\\$' + key + '}}', 'g');
+          clause = clause.replaceAll(clauseRegex, value);
         }
 
         //find join statements

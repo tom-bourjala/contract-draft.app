@@ -4,7 +4,28 @@ import AjvErrors from 'ajv-errors';
 const schema = {
     "type": "object",
     "patternProperties": {
-        "^[a-zA-Z0-9_]+$": {
+        "common": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["text", "textarea", "checkbox"],
+                            "errorMessage": "${0} is not a recognized input type"
+                        },
+                        "label": { "type": "string", "minLength": 1 },
+                        "default": { "type": ["string", "boolean", "null"] },
+                        "mandatory": { "type": "boolean" },
+                        "inactiveContent": { "type": ["string", "null"] },
+                        "activeContent": { "type": ["string", "null"] },
+                        "template": { "type": "string" }
+                    }
+                }
+            }
+        },
+        "^(?!common$)[a-zA-Z0-9_]+$": {
             "type": "object",
             "properties": {
                 "label": { "type": "string", "minLength": 1 },
@@ -107,6 +128,7 @@ function customValidator(json) {
     }
 
     for (let key in json) {
+        if(key === 'common') continue;
         const clause = json[key].clause;
 
         const joinRegex = /{{join\((.*?)\)}}/g;
@@ -230,7 +252,8 @@ export function customValidation(json) {
 export function autoFixRequired(json){
     const newJson = JSON.parse(JSON.stringify(json));
     for (let key in newJson) {
-        const clause = newJson[key]
+        if(key == 'common') continue;
+        const clause = newJson[key];
         if(typeof clause == 'object'){
             if(!clause.hasOwnProperty('clause')){
                 clause.clause = '';

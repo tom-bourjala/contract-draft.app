@@ -47,8 +47,6 @@ import {customValidation} from '@/logic/validation.js';
 </template>
 
 <script>
-
-import {autoFixRequired} from "@/logic/validation";
 import {compressJSON} from "@/logic/compression";
 
 export default {
@@ -107,10 +105,10 @@ export default {
             //}
             //}, 5)
           } catch (e) {
-            console.log(e)
+            console.error(e)
           }
         } catch (e) {
-          console.log(e)
+          console.error(e)
           this.parsingError = true
         }
       },
