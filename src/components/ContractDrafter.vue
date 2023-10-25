@@ -9,7 +9,7 @@
     <div class="panel-left">
       <div v-for="(content, clause) in template">
         <div class="panel-topic">
-          <h2>{{content.label}}</h2>
+          <h2 v-if="hasInputs(clause)" >{{content.label}}</h2>
           <h2 v-if="clause === 'common'">Common</h2>
           <div v-for="(input, key) in content">
             <AInput
@@ -492,6 +492,14 @@ export default {
       } catch (err) {
         console.error('Failed to copy text: ', err);
       }
+    },
+    hasInputs: function (clause) {
+      for (let key in this.template[clause]) {
+        if (key !== 'label' && key !== 'clause') {
+          return true;
+        }
+      }
+      return false;
     }
   },
 };
