@@ -59,7 +59,19 @@
       </div>
     </div>
     <div class="panel-right">
-      <div id="draft-output" :innerHTML=" draftOutput.replaceAll('\n', '<br>') "></div>
+      <div id="draft-output">
+        <div v-for="draftClause in draftClauses" class="draft-clause-item">
+          <div class="draft-copy-button">
+            <ABtn
+                icon="i-bx-bxs-copy-alt"
+                icon-only
+                variant="text"
+                @click="copyDraftClauseToClipboard(draftClause.key)"
+            />
+          </div>
+          <div class="draft-clause" :innerHTML="draftClause.content.replaceAll('\n', '<br>')"></div>
+        </div>
+      </div>
       <div class="copy-button">
         <ABtn
             icon="i-bx-bxs-copy-alt"
@@ -85,6 +97,7 @@ export default {
     return {
       errorDisplay: '',
       draftOutput: '',
+      draftClauses: [],
       templateInputs: {},
       template:null,
       editing:true,
@@ -359,123 +372,126 @@ export default {
       this.template = data;
       this.editing = false;
     },
-    updateDraftOutput: function () {
+    updateDraftOutput: function() {
       let draftOutput = '';
+      let draftClauses = [];
       const common = this.template.common;
-      for (let jurisdictionKey in this.template) {
-        if(jurisdictionKey === "common") continue;
-        let jurisdiction = this.template[jurisdictionKey];
-        let clause = jurisdiction.clause;
-        draftOutput += '<h1>' + jurisdiction.label + '</h1>';
-        for (let key in jurisdiction) {
-          if (key !== 'label' && key !== 'clause') {
-            const value = this.getFieldValue(jurisdictionKey, key);
+      const draftKeys = Object.keys(this.template).filter(key => key !== "common");
 
-            const clauseRegex = new RegExp('{{' + key + '}}', 'g');
-            clause = clause.replaceAll(clauseRegex, value);
-          }
-        }
+      for(let key of draftKeys){
+        const contentDraft = this.getClauseDraft(key, common);
+        draftClauses.push({key, content:contentDraft});
+        draftOutput += contentDraft;
+      }
 
-        for(let key in common){
-          const value = this.getFieldValue('common', key);
-          const clauseRegex = new RegExp('{{\\$' + key + '}}', 'g');
+      this.draftOutput = draftOutput;
+      this.draftClauses = draftClauses;
+    },
+
+    getClauseDraft: function (draftKey, common) {
+      let draft = '';
+      let area = this.template[draftKey];
+      let clause = area.clause;
+      draft += '<h1>' + area.label + '</h1>';
+
+      clause = this.replaceKeysWithValues(draftKey, area, clause);
+      clause = this.replaceCommonKeysWithValues(common, clause);
+      clause = this.processJoinStatements(draftKey, clause);
+      clause = this.processCombineStatements(draftKey, clause);
+
+      return draft + clause;
+    },
+
+    replaceKeysWithValues: function(draftKey, area, clause) {
+      for (let key in area) {
+        if (key !== 'label' && key !== 'clause') {
+          const value = this.getFieldValue(draftKey, key);
+          const clauseRegex = new RegExp('{{' + key + '}}', 'g');
           clause = clause.replaceAll(clauseRegex, value);
         }
-
-        //find join statements
-        const joinRegex = /{{join\((.*?)\)}}/g;
-        const joins = clause.matchAll(joinRegex);
-
-        //join statements are defined such as join([content,...], separator, prefix, suffix)
-        for (const join of joins) {
-          let statement = join[1];
-
-          const contentArg = statement.match(/\[(.*?)\]/g)[0];
-          let content = contentArg.replaceAll(/\[|\]/g, '');
-          const contentArr = content.split(',').map(item => item.trim()).filter(item => item);
-          const contentValues = contentArr.map(item => this.getFieldValue(jurisdictionKey, item)).filter(item => item.length > 0);
-
-          statement = statement.replaceAll(contentArg, '');
-          const args = statement.match(/'(.*?)'|"(.*?)"|`(.*?)`/g).map(item => item.replaceAll(/['"`]/g, ''));
-          let separator = args[0];
-          let prefix = '';
-          let suffix = '';
-          if (args.length > 1) {
-            prefix = args[1].replaceAll(/['"`]/g, '');
-            if (args.length > 2) {
-              suffix = args[2].replaceAll(/['"`]/g, '');
-            }
-          }
-          const containHighlight = contentValues.some(item => item.includes('<span class="highlight">'));
-          if(containHighlight){
-            prefix = '<span class="highlight">' + prefix + '</span>';
-            suffix = '<span class="highlight">' + suffix + '</span>';
-            separator = '<span class="highlight">' + separator + '</span>';
-          }
-          let joinValue = contentValues.join(separator);
-          if (joinValue.length > 0) {
-            joinValue = prefix + contentValues.join(separator) + suffix;
-          }
-          clause = clause.replaceAll(join[0], joinValue);
-        }
-
-        //find combine statements
-        const findCombineRegex = /{{combine\((.*?)\)}}/g;
-        const combineStatements = clause.matchAll(findCombineRegex);
-
-        // combine statements are defined such as iterate([content,...], prefix, suffix, default)
-        for (const combine of combineStatements) {
-          let statement = combine[1];
-
-          const contentArg = statement.match(/\[(.*?)\]/g)[0];
-          let content = contentArg.replaceAll(/\[|\]/g, '');
-          const contentArr = content.split(',').map(item => item.trim()).filter(item => item);
-          const contentValues = contentArr.map(item => this.getFieldValue(jurisdictionKey, item)).filter(item => item.length > 0);
-
-          statement = statement.replaceAll(contentArg, '');
-          const args = statement.match(/'(.*?)'|"(.*?)"|`(.*?)`/g).map(item => item.replaceAll(/['"`]/g, ''));
-          let prefix = '';
-          let suffix = '';
-          let defaultValue = '';
-          if (args.length > 0) {
-            prefix = args[0].replaceAll(/['"`]/g, '');
-            if (args.length > 1) {
-              suffix = args[1].replaceAll(/['"`]/g, '');
-              if (args.length > 2) {
-                defaultValue = args[2].replaceAll(/['"`]/g, '');
-              }
-            }
-          }
-          const containHighlight = contentValues.some(item => item.includes('<span class="highlight">'));
-          if(containHighlight){
-            prefix = '<span class="highlight">' + prefix + '</span>';
-            suffix = '<span class="highlight">' + suffix + '</span>';
-          }
-          let combineValue = contentValues.join('');
-          if (combineValue.length > 0) {
-            combineValue = prefix;
-            for(let i = 0; i < contentValues.length; i++){
-              combineValue += contentValues[i];
-
-              //if before last item, add "and"
-              if(i === contentValues.length - 2){
-                combineValue += ' and ';
-              }
-              //if not before last item, add ","
-              else if(i < contentValues.length - 1){
-                combineValue += ', ';
-              }
-            }
-            combineValue += suffix;
-          } else {
-            combineValue = defaultValue;
-          }
-          clause = clause.replaceAll(combine[0], combineValue);
-        }
-
-        draftOutput += clause;
       }
-      this.draftOutput = draftOutput;
+      return clause;
+    },
+    replaceCommonKeysWithValues: function(common, clause) {
+      for (let key in common) {
+        const value = this.getFieldValue('common', key);
+        const clauseRegex = new RegExp('{{\\$' + key + '}}', 'g');
+        clause = clause.replaceAll(clauseRegex, value);
+      }
+      return clause;
+    },
+
+    processJoinStatements: function(draftKey, clause) {
+      const joinRegex = /{{join\((.*?)\)}}/g;
+      const joins = clause.matchAll(joinRegex);
+      for (const join of joins) {
+        clause = clause.replaceAll(join[0], this.getJoinValue(this, join[1], draftKey));
+      }
+      return clause;
+    },
+
+     getJoinValue: function(statement, draftKey) {
+      let [contentArg, ...args] = statement.match(/\[(.*?)\]|'(.*?)'|"(.*?)"|`(.*?)`/g);
+      let contentValues = this.getContentValues(draftKey, contentArg);
+      let [separator, prefix, suffix] = this.parseArguments(args);
+
+      const containHighlight = contentValues.some(item => item.includes('<span class="highlight">'));
+      if (containHighlight) {
+        [prefix, suffix, separator] = this.highlight(prefix, suffix, separator);
+      }
+      let joinValue = contentValues.join(separator);
+      return joinValue.length > 0 ? prefix + joinValue + suffix : '';
+    },
+
+     processCombineStatements: function(draftKey, clause) {
+      const combineRegex = /{{combine\((.*?)\)}}/g;
+      const combines = clause.matchAll(combineRegex);
+      for (const combine of combines) {
+        clause = clause.replaceAll(combine[0], this.getCombineValue(combine[1], draftKey));
+      }
+      return clause;
+    },
+
+    getCombineValue: function(statement, draftKey) {
+      let [contentArg, ...args] = statement.match(/\[(.*?)\]|'(.*?)'|"(.*?)"|`(.*?)`/g);
+      let contentValues = this.getContentValues(draftKey, contentArg);
+      let [prefix, suffix, defaultValue] = this.parseArguments(args);
+
+      const containHighlight = contentValues.some(item => item.includes('<span class="highlight">'));
+      if (containHighlight) {
+        [prefix, suffix] = this.highlight(prefix, suffix);
+      }
+
+      let combineValue = contentValues.length > 0 ? this.formatCombineValue(contentValues, prefix, suffix) : defaultValue;
+      return combineValue;
+    },
+        getContentValues: function(draftKey, contentArg) {
+      let content = contentArg.replaceAll(/\[|\]/g, '');
+      let contentArr = content.split(',').map(item => item.trim()).filter(item => item);
+      return contentArr.map(item => this.getFieldValue(draftKey, item)).filter(item => item.length > 0);
+    },
+        parseArguments: function(args) {
+      return args.map(item => item.replaceAll(/['"`]/g, ''));
+    },
+
+    highlight: function(prefix, suffix, separator = '') {
+      return [
+        '<span class="highlight">' + prefix + '</span>',
+        '<span class="highlight">' + suffix + '</span>',
+        '<span class="highlight">' + separator + '</span>'
+      ];
+    },
+        formatCombineValue: function(contentValues, prefix, suffix) {
+      let formattedValue = prefix;
+      contentValues.forEach((value, index) => {
+        formattedValue += value;
+        if (index === contentValues.length - 2) {
+          formattedValue += ' and ';
+        } else if (index < contentValues.length - 1) {
+          formattedValue += ', ';
+        }
+      });
+      return formattedValue + suffix;
     },
     copyDraftOutputToClipboard: async function () {
       let textToCopy = this.draftOutput;
@@ -486,6 +502,22 @@ export default {
       textToCopy = textToCopy.replaceAll(H1Regex, '\n\n$1\n');
       textToCopy = textToCopy.replaceAll(H2Regex, '\n\n$1\n');
       textToCopy = textToCopy.replaceAll(H3Regex, '\n\n$1\n');
+      textToCopy = textToCopy.replaceAll(spanRegex, '$1');
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
+    },
+    copyDraftClauseToClipboard: async function (key) {
+      let textToCopy = this.draftClauses.find(clause => clause.key === key).content;
+      const H1Regex = /<h1>(.*?)<\/h1>/g;
+      const H2Regex = /<h2>(.*?)<\/h2>/g;
+      const H3Regex = /<h3>(.*?)<\/h3>/g;
+      const spanRegex = /<span class="highlight">(.*?)<\/span>/g;
+      textToCopy = textToCopy.replaceAll(H1Regex, '\n\n$1\n\n');
+      textToCopy = textToCopy.replaceAll(H2Regex, '\n\n$1\n\n');
+      textToCopy = textToCopy.replaceAll(H3Regex, '\n\n$1\n\n');
       textToCopy = textToCopy.replaceAll(spanRegex, '$1');
       try {
         await navigator.clipboard.writeText(textToCopy);
@@ -556,10 +588,10 @@ export default {
   color: hsl(var(--a-primary));
 }
 
-#draft-output > h1 {
+.draft-clause > h1 {
   font-size: 1.5em;
   font-weight: bold;
-  margin: 20px 10px 10px 10px;
+  margin: 20px 10px 10px 40px;
 }
 
 .panel-topic > h2 {
@@ -572,5 +604,15 @@ export default {
   position: absolute;
   right: 15vw;
   top: 100px;
+}
+
+.draft-clause-item {
+  position: relative;
+}
+
+.draft-copy-button {
+  position: absolute;
+  left: 0;
+  top: -3px;
 }
 </style>
